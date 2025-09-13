@@ -1,0 +1,14 @@
+[
+  {
+    "question": "O que é o IBS na Reforma Tributária?",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "Qual o objetivo do imposto seletivo?",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "Existe cashback de impostos para famílias de baixa renda?",
+    "expected_source_contains": "cashback"
+  }
+]

@@ -1,0 +1,30 @@
+# Core
+langchain>=0.2.11
+langchain-community>=0.2.10
+langgraph>=0.2.1
+
+# Vector stores
+chromadb>=0.5.5
+faiss-cpu>=1.8.0
+
+# Loaders & parsing
+beautifulsoup4>=4.12.3
+requests>=2.32.3
+pypdf>=4.2.0
+unstructured>=0.14.10
+
+# Embeddings
+sentence-transformers>=3.0.1
+torch>=2.2.0
+
+# UI
+streamlit>=1.37.0
+
+# Eval (optional)
+ragas>=0.1.17
+pandas>=2.2.2
+numpy>=1.26.4
+
+# Utils
+python-dotenv>=1.0.1
+tiktoken>=0.7.0
