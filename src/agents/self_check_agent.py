@@ -1,15 +1,21 @@
 import re
 from typing import Dict, Any
 
-CITATION_PAT = re.compile(r"https?://\S+")
+#valida se há URL por sentença
+
+URL = r"https?://\S+"
+SENT = re.compile(r"(?<=[\.!?])\s+")
 
 def self_check(payload: Dict[str, Any]) -> Dict[str, Any]:
-    """Regra simples: exige pelo menos 1 URL de citação na resposta.
-    Futuro: validar que cada sentença assertiva tem uma citação próxima."""
-    answer = payload.get("answer","")
-    if not CITATION_PAT.search(answer):
-        return {
-            "ok": False,
-            "message": "Resposta sem evidências suficientes. Não encontrei citações nas fontes indexadas."
-        }
+    txt = (payload.get("answer") or "").strip()
+    if not txt:
+        return {"ok": False, "message": "Sem resposta."}
+    bad = []
+    for s in [s for s in SENT.split(txt) if s.strip()]:
+        if "não encontrei evidências" in s.lower():
+            continue
+        if not re.search(URL, s):
+            bad.append(s[:120])
+    if bad:
+        return {"ok": False, "message": f"Faltam citações em {len(bad)} sentença(s)."}
     return {"ok": True, "message": "OK"}

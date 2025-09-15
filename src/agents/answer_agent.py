@@ -1,43 +1,55 @@
-from typing import List, Dict, Any
-import os
-from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
+import os
 
-SYSTEM_PROMPT = """Você é um assistente de RAG sobre Reforma Tributária (Brasil).
-Responda de forma informativa e objetiva, SEM dar aconselhamento jurídico.
-Use SOMENTE as fontes fornecidas no contexto.
-Inclua CITAÇÕES obrigatórias (URL + se houver, página) após as frases assertivas.
-Se não houver evidências suficientes nos trechos, diga explicitamente que não encontrou nas fontes indexadas.
-"""
+SYSTEM = """Você é um assistente sobre a Reforma Tributária (Brasil).
+Use apenas o contexto fornecido. SEM aconselhamento jurídico.
+Cite as fontes após CADA sentença factual usando colchetes numerados [1], [2], ...
+No final, liste 'Referências' mapeando cada número para uma URL exata do contexto.
+Nunca invente links."""
 
 TEMPLATE = """{system}
 
 # Pergunta
 {question}
 
-# Contexto (trechos recuperados)
+# Contexto
 {context}
 
-# Instruções
-- Cite a fonte após cada afirmação factual importante, no formato [Título/Órgão — URL (p. X)]
-- Se não houver contexto suficiente, responda: "Não encontrei evidências nas fontes indexadas para responder com segurança."
-- Não faça diagnóstico legal. Seja informativo.
+# Instruções de citação (OBRIGATÓRIO)
+- Após CADA sentença factual, inclua um marcador [n] (por ex.: "O IBS incide sobre X. [1]").
+- Reutilize o mesmo [n] quando a mesma fonte sustentar mais de uma sentença.
+- Ao final, escreva:
+
+Referências
+[1] URL (Título, p. X se houver)
+[2] URL (Título, p. X)
+...
+
+- Só use URLs que aparecem no contexto acima.
+- Se o contexto for insuficiente, responda literalmente:
+"Não encontrei evidências nas fontes indexadas para responder com segurança."
 """
 
-def format_context(chunks: List[Dict[str, Any]]) -> str:
-    formatted = []
+def _fmt_ctx(chunks):
+    parts = []
     for i, c in enumerate(chunks, start=1):
-        src = c.get("source","")
-        title = c.get("title") or "(sem título)"
-        page = c.get("page")
-        page_str = f" (p. {page})" if page is not None else ""
-        formatted.append(f"[{i}] {title}{page_str}\n{src}\nTrecho:\n{c.get('content','')[:1200]}")
-    return "\n\n".join(formatted)
+        page = f"(p. {c.get('page')})" if c.get("page") is not None else ""
+        snippet = (c.get("content") or "").replace("\n", " ")[:500]
+        parts.append(f"[{i}] {c.get('title') or '(sem título)'} {page}\n{c.get('source')}\nTrecho: {snippet}")
+    return "\n\n".join(parts)
 
-def answer(question: str, chunks: List[Dict[str, Any]]) -> Dict[str, Any]:
-    model = os.environ.get("OLLAMA_MODEL", "llama3.1:8b")
-    llm = ChatOllama(model=model)
-    ctx = format_context(chunks)
-    prompt = PromptTemplate.from_template(TEMPLATE).format(system=SYSTEM_PROMPT, question=question, context=ctx)
+def answer(question: str, chunks):
+    llm = ChatOllama(
+        model=os.getenv("OLLAMA_MODEL","llama3.1:8b"),
+        base_url=os.getenv("OLLAMA_HOST","http://localhost:11434"),
+        temperature=0.0,
+        # limite para acelerar:
+        num_predict=int(os.getenv("OLLAMA_NUM_PREDICT","256")),
+        num_ctx=int(os.getenv("OLLAMA_NUM_CTX","2048")),
+    )
+    prompt = PromptTemplate.from_template(TEMPLATE).format(
+        system=SYSTEM, question=question, context=_fmt_ctx(chunks)
+    )
     resp = llm.invoke(prompt)
-    return {"answer": resp.content, "used_chunks": chunks}
+    return {"answer": getattr(resp, "content", str(resp)), "used_chunks": chunks}

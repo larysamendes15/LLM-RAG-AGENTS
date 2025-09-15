@@ -1,8 +1,6 @@
-from typing import Dict, Any
+# adiciona o disclaimer se passou no self-check
 
-DISCLAIMER = "\n\n—\n*Aviso*: conteúdo informativo baseado em fontes oficiais (gov.br/Planalto/Câmara/Senado). Não substitui consultoria jurídica."
-
-def apply_safety(payload: Dict[str, Any]) -> Dict[str, Any]:
-    answer = payload.get("answer","") + DISCLAIMER
-    payload["answer"] = answer
-    return payload
+def apply_safety(result: dict) -> dict:
+    disclaimer = "\n\n—\n*Aviso*: conteúdo informativo com base em fontes oficiais (gov.br/Planalto/Câmara/Senado). Não substitui consultoria jurídica."
+    result["answer"] = (result.get("answer") or "") + disclaimer
+    return result
