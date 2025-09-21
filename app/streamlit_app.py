@@ -1,54 +1,195 @@
-import os, time, sys, pathlib, streamlit as st
-from dotenv import load_dotenv
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
-from src.graph import build_graph, GraphState
+from __future__ import annotations
 
-load_dotenv() # ler as variaveis de ambiente env
+import os
+import sys
+import time
+import unicodedata
+from typing import List, Dict, Any
 
-st.set_page_config(page_title="Assistente Reforma Tributária", layout="wide") 
-st.title("📘 Assistente Reforma Tributária")
+import streamlit as st
 
-q = st.text_input("Pergunta (ex: O que é IBS? )")
+# =========================================
+# Import do GRAFO REAL (sem mock)
+# =========================================
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(PROJECT_ROOT)  # garante 'src' no PYTHONPATH
+try:
+    from src.graph import get_graph  # <- seu grafo LangGraph real
+except Exception as e:
+    st.set_page_config(page_title="Aris — erro de import", page_icon="⚠️")
+    st.error(
+        f"Falha ao importar `src.graph.get_graph`: {e}\n\n"
+        f"Dica: confirme se está rodando de `{PROJECT_ROOT}` e se a pasta `src/` existe."
+    )
+    st.stop()
 
-if "graph" not in st.session_state:
-    st.session_state.graph = build_graph()
+# Diretórios do Chroma (absolutos para não “trocar” de pasta quando rodar de /app)
+os.environ.setdefault("PERSIST_DIR", os.path.join(PROJECT_ROOT, "data", "chroma_reforma_textos_legais"))
+os.environ.setdefault("COLLECTION", "reforma_textos_legais")
 
-if st.button("Perguntar") and q.strip():
+# =========================
+# Branding / Constantes
+# =========================
+APP_NAME = "Aris — Assistente da Reforma Tributária"
+FALLBACK_TEXT = "Não foi encontrado contexto para a pergunta solicitada."
+
+# Dicas para tempo de vida do modelo no Ollama (evita cold start)
+os.environ.setdefault("OLLAMA_KEEP_ALIVE", "10m")
+os.environ.setdefault("OLLAMA_NUM_PREDICT", "192")  # 1 parágrafo enxuto
+
+# =========================
+# Helpers
+# =========================
+def _normalize(s: str) -> str:
+    s = (s or "").strip().lower()
+    s = unicodedata.normalize("NFD", s)
+    return "".join(ch for ch in s if unicodedata.category(ch) != "Mn")
+
+def is_fallback(answer: str) -> bool:
+    """Checagem robusta do fallback, independente de acentos/pontuação final."""
+    norm = _normalize(answer).rstrip(".! ")
+    target = _normalize(FALLBACK_TEXT).rstrip(".! ")
+    return norm == target
+
+def ref_link_from_chunk(ch: Dict[str, Any]) -> str | None:
+    if not ch:
+        return None
+    src = ch.get("source")
+    pg = ch.get("page")
+    if not src:
+        return None
+    return f"{src}" + (f"#page={pg}" if pg is not None else "")
+
+# =========================
+# Page config & CSS (tema claro)
+# =========================
+st.set_page_config(page_title=APP_NAME, page_icon="🏛️", layout="wide")
+st.markdown(
+    """
+    <style>
+      :root{
+        --aris-bg: #f0f0f0;
+        --aris-panel: #ffffff;
+        --aris-card: #f9f9f9;
+        --aris-primary: #32CD32;
+        --aris-accent: #007bff;
+        --aris-text: #333333;
+        --aris-subtle: #6c757d;
+        --aris-user-bg: #e0f2f7;
+        --aris-assist-bg: #fff8e1;
+        --aris-chip-bg: rgba(255,193,7,0.2);
+        --aris-chip-border: rgba(255,193,7,0.4);
+      }
+      .stApp {
+        background: radial-gradient(600px 400px at 80% 80%, rgba(255,215,0,0.15), transparent 60%),
+                    radial-gradient(500px 300px at 20% 20%, rgba(0,123,255,0.15), transparent 60%),
+                    var(--aris-bg);
+        color: var(--aris-text);
+      }
+      .aris-header h1 {
+        font-weight: 800 !important;
+        letter-spacing: .3px;
+        margin-bottom: .25rem;
+        background: linear-gradient(90deg, var(--aris-accent), var(--aris-primary));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      }
+      .chat-wrap { padding: 0; max-width: 800px; margin: 0 auto; }
+      [data-testid="stChatMessage"]:has(.user) { display: flex; flex-direction: row-reverse; }
+      [data-testid="stChatMessage"]:has(.user) .stChatMessageContent{ align-items: flex-end; }
+      .bubble { display:inline-block; max-width:95%; border-radius:18px; padding:14px 18px; margin:4px 0 12px 0;
+                line-height:1.6; box-shadow:0 2px 5px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.05);
+                border:1px solid rgba(0,0,0,0.05); }
+      .bubble.user { background: var(--aris-user-bg); border-bottom-right-radius:4px; color: var(--aris-text);}
+      .bubble.assistant { background: var(--aris-assist-bg); border-bottom-left-radius:4px; color: var(--aris-text);}
+      .ref-title { color: var(--aris-subtle); font-size:.85rem; margin:0 0 4px 4px; font-weight:500; }
+      .ref-chip { display:inline-block; background:var(--aris-chip-bg); border:1px solid var(--aris-chip-border);
+                  color:var(--aris-text); padding:6px 12px; margin:0 8px 4px 0; border-radius:16px; font-size:.85rem; text-decoration:none !important; }
+      section[data-testid="stBottom"] { bottom: 20px !important; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# =========================
+# Sidebar
+# =========================
+with st.sidebar:
+    st.markdown("### ⚙️ Opções")
+    if st.button("🗑️ Limpar conversa", use_container_width=True, type="secondary"):
+        st.session_state.messages = []
+        st.rerun()
+    st.markdown("---")
+# =========================
+# Header
+# =========================
+st.markdown(f"""<div class="aris-header"><h1>{APP_NAME}</h1></div>""", unsafe_allow_html=True)
+
+# =========================
+# Cache do grafo real
+# =========================
+@st.cache_resource(show_spinner=False)
+def _graph():
+    return get_graph()
+
+graph = _graph()
+
+# =========================
+# Estado de conversa (sem mensagem inicial)
+# =========================
+if "messages" not in st.session_state:
+    st.session_state.messages: List[Dict[str, Any]] = []
+
+# =========================
+# Render do histórico
+# =========================
+st.markdown('<div class="chat-wrap">', unsafe_allow_html=True)
+for m in st.session_state.messages:
+    if m["text"] == "...":  # não renderiza marcador
+        continue
+    role = m.get("role", "assistant")
+    with st.chat_message("user" if role == "user" else "assistant", avatar="🧑‍💻" if role == "user" else "🏛️"):
+        cls = "user" if role == "user" else "assistant"
+        st.markdown(f'<div class="bubble {cls}">{m.get("text","")}</div>', unsafe_allow_html=True)
+        refs: List[str] = m.get("refs") or []
+        if refs:
+            st.markdown('<div class="ref-title">Referência</div>', unsafe_allow_html=True)
+            for r in refs[:1]:
+                st.markdown(f'<a class="ref-chip" href="{r}" target="_blank">Fonte</a>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# =========================
+# Entrada de chat
+# =========================
+prompt = st.chat_input("Pergunte algo (ex.: O que é cashback?)")
+
+if prompt:
+    st.session_state.messages.append({"role": "user", "text": prompt, "refs": []})
+    st.session_state.messages.append({"role": "assistant", "text": "...", "refs": []})
+    st.rerun()
+
+# Gera resposta quando o marcador "..." está no fim
+if st.session_state.messages and st.session_state.messages[-1]["text"] == "...":
+    last_prompt = st.session_state.messages[-2]["text"]
+
     t0 = time.time()
-    try:
-        with st.spinner("Consultando (retriever → answer → self-check)…"):
-            out = st.session_state.graph.invoke(GraphState(question=q.strip()))
+    result = graph.invoke({"question": last_prompt.strip()})
+    t1 = time.time()
 
-        # out é um dict
-        check  = out.get("check", {})
-        result = out.get("result", {})
-        used   = result.get("used_chunks", [])
-        ans    = result.get("answer", "")
+    answer = (result or {}).get("answer", "").strip()
+    chunks = (result or {}).get("chunks") or []
 
-        # Debug visível
-        st.write(":memo: **Debug**",
-                 {"len_used_chunks": len(used),
-                  "has_answer": bool(ans),
-                  "check": check})
+    refs: List[str] = []
+    if not is_fallback(answer) and chunks:
+        link = ref_link_from_chunk(chunks[0])
+        if link:
+            refs = [link]
 
-        if check and not check.get("ok"):
-            st.warning(check.get("message"))
-        else:
-            if not ans:
-                st.info("O LLM não retornou conteúdo (answer vazio). Veja o Debug acima.")
-            st.markdown(ans)
+    # substitui o marcador pela resposta real
+    st.session_state.messages.pop()
+    st.session_state.messages.append({"role": "assistant", "text": answer or "—", "refs": refs})
 
-            with st.expander("Fontes utilizadas"):
-                if not used:
-                    st.info("Nenhum chunk foi marcado como 'usado'.")
-                for i, ch in enumerate(used, start=1):
-                    title = ch.get("title") or "(sem título)"
-                    page  = f" (p. {ch.get('page')})" if ch.get("page") is not None else ""
-                    src   = ch.get("source") or ""
-                    st.markdown(f"**[{i}] {title}{page}**  \n{src}")
+    # mostra tempo de resposta no rodapé do último bloco
+    with st.chat_message("assistant", avatar="🏛️"):
+        st.caption(f"⏱️ {t1 - t0:.2f}s")
 
-    except Exception as e:
-        st.error("Falha ao processar a pergunta. Veja a exceção abaixo.")
-        st.exception(e)
-
-    st.caption(f"Latência: {(time.time()-t0)*1000:.0f} ms")
+    st.rerun()
