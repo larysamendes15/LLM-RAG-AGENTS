@@ -1,14 +1,158 @@
 [
   {
-    "question": "O que é o IBS na Reforma Tributária?",
+    "question": "O que é o IBS na Reforma Tributária e qual ente é responsável por sua gestão?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "O Imposto sobre Bens e Serviços (IBS) é um tributo de base ampla que substitui ICMS e ISS, de competência compartilhada, com gestão por Comitê Gestor nacional.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "O que é a CBS e quais tributos federais ela substitui?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "A Contribuição sobre Bens e Serviços (CBS) substitui PIS, PIS-Importação, Pasep e Cofins, unificando a tributação federal sobre consumo.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "Qual é a finalidade do Imposto Seletivo (‘imposto do pecado’) na EC 132/2023?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "Instituído para desestimular o consumo de bens e serviços prejudiciais à saúde ou ao meio ambiente, sem função arrecadatória principal.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "Haverá sistema de cashback para famílias de baixa renda? Em que consiste?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/perguntas-e-respostas-reforma-tributaria_.pdf",
+    "ground_truth_support": "O modelo prevê devolução de parte do imposto pago (cashback) para famílias de baixa renda, com desenho em lei complementar.",
     "expected_source_contains": "gov.br"
   },
   {
-    "question": "Qual o objetivo do imposto seletivo?",
+    "question": "Como a cesta básica nacional impacta a alíquota do novo sistema?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2024-04-23_regulamentacao-da-reforma-tributaria_completa.pdf",
+    "ground_truth_support": "Itens da cesta básica nacional podem ter alíquota reduzida ou zerada conforme regulamentação para proteção de renda.",
     "expected_source_contains": "gov.br"
   },
   {
-    "question": "Existe cashback de impostos para famílias de baixa renda?",
-    "expected_source_contains": "cashback"
+    "question": "Qual é o princípio de não cumulatividade no IBS/CBS?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "Crédito financeiro amplo: todo imposto incidente nas etapas anteriores é creditável, evitando tributação em cascata.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "Como será feita a transição do ICMS/ISS para o IBS?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2023-11-14_cartilha_reforma-tributaria_atualizada-pos-senado.pdf",
+    "ground_truth_support": "Haverá período de transição com alíquotas gradativas e extinção progressiva dos tributos atuais até a migração completa para o IBS.",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "Qual é a base de incidência do IBS/CBS?",
+    "ground_truth_url": "https://espacolegislacao.totvs.com/reforma-tributaria/",
+    "ground_truth_support": "Tributos de base ampla sobre bens e serviços, incidindo no destino, alcançando operações com bens materiais, imateriais e serviços.",
+    "expected_source_contains": "espacolegislacao.totvs.com"
+  },
+  {
+    "question": "O IBS incide no destino ou na origem?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "O IBS adota o princípio do destino: a receita é apropriada no local do consumo.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "O que é o Fundo de Desenvolvimento Regional (FDR) criado pela Reforma?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "Fundo destinado a reduzir desigualdades regionais e apoiar desenvolvimento, financiado pela União, com critérios definidos em lei.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "Como ficam os regimes específicos (ex.: combustíveis, energia) no novo modelo?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2024-04-23_regulamentacao-da-reforma-tributaria_completa.pdf",
+    "ground_truth_support": "Há previsão de regimes diferenciados e monofásicos para setores como combustíveis, energia e telecomunicações, definidos em lei complementar.",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "Haverá alíquota única de referência?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria",
+    "ground_truth_support": "O sistema prevê alíquota padrão, com reduções/isenções específicas; o percentual exato é definido na regulamentação.",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "Quem compõe o Comitê Gestor do IBS?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "Composto por representantes dos entes subnacionais, responsável por gerir a arrecadação e distribuição do IBS.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "O imposto seletivo pode incidir sobre exportações?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "A EC 132 resguarda desoneração das exportações no âmbito do IBS/CBS; seletivo tem finalidade extrafiscal e hipóteses definidas.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "Há mecanismo de devolução de créditos acumulados?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2024-04-23_regulamentacao-da-reforma-tributaria_completa.pdf",
+    "ground_truth_support": "A regulamentação prevê devolução de saldos credores em prazos e condições definidos, reforçando a não cumulatividade plena.",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "Como o novo sistema trata Zona Franca de Manaus e regimes especiais já existentes?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/perguntas-e-respostas-reforma-tributaria_.pdf",
+    "ground_truth_support": "ZFM e outros regimes recebem tratamento específico de transição, preservando vantagens competitivas conforme regras constitucionais.",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "O IBS/CBS incidem sobre serviços financeiros?",
+    "ground_truth_url": "https://espacolegislacao.totvs.com/reforma-tributaria/",
+    "ground_truth_support": "Há previsão de incidência sobre diversas operações, incluindo intermediação e serviços financeiros, com regras específicas.",
+    "expected_source_contains": "espacolegislacao.totvs.com"
+  },
+  {
+    "question": "Qual o tratamento para educação e saúde?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2023-11-14_cartilha_reforma-tributaria_atualizada-pos-senado.pdf",
+    "ground_truth_support": "Previsão de alíquotas reduzidas e/ou isenções para serviços essenciais como educação e saúde, conforme critérios legais.",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "Como ficam os benefícios fiscais do ICMS existentes?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "Há regra de transição e extinção gradual; benefícios são substituídos por instrumentos como FDR e créditos financeiros.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "A arrecadação do IBS será compartilhada automaticamente aos entes?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "O Comitê Gestor gerencia a arrecadação e distribuição automática da receita aos entes federados conforme destino do consumo.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "Como o novo sistema lida com importações e exportações?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/perguntas-e-respostas-reforma-tributaria_.pdf",
+    "ground_truth_support": "Importações sofrem a mesma carga do produto nacional; exportações são desoneradas, com manutenção de créditos.",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "Existe limite ou teto para alíquota padrão agregada?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria",
+    "ground_truth_support": "O desenho prevê alíquota padrão calibrada para manter carga neutra; limites e percentuais vêm na lei complementar.",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "O que muda na tributação de telecomunicações com IBS/CBS?",
+    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2024-04-23_regulamentacao-da-reforma-tributaria_completa.pdf",
+    "ground_truth_support": "Telecomunicações podem ter regime específico/monofásico e regras de crédito para não cumulatividade.",
+    "expected_source_contains": "gov.br"
+  },
+  {
+    "question": "Como a reforma trata externalidades negativas pelo Imposto Seletivo?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "O seletivo tem caráter extrafiscal, direcionado a bens/serviços nocivos à saúde ou ao meio ambiente, com alíquotas específicas.",
+    "expected_source_contains": "planalto.gov.br"
+  },
+  {
+    "question": "Quais mecanismos aumentam a transparência e simplificação no cumprimento das obrigações?",
+    "ground_truth_url": "https://espacolegislacao.totvs.com/reforma-tributaria/",
+    "ground_truth_support": "Modelo com legislação uniforme, crédito amplo e recolhimento centralizado via Comitê Gestor simplifica o cumprimento.",
+    "expected_source_contains": "espacolegislacao.totvs.com"
+  },
+  {
+    "question": "Qual é o impacto esperado na guerra fiscal entre estados?",
+    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
+    "ground_truth_support": "Com tributação no destino e FDR, a reforma busca reduzir a guerra fiscal baseada em benefícios de origem.",
+    "expected_source_contains": "planalto.gov.br"
   }
 ]
