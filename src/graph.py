@@ -36,9 +36,6 @@ def expand_query(q: str) -> str:
     """
     qn = _normalize(q)
 
-    # expande 'oq', 'o q'
-    qn = re.sub(r"^(oq|o q)\b", "o que é", qn)
-
     # mapeia siglas para descrições
     expansions: List[str] = []
     if re.search(r"\bcbs\b", qn):

@@ -19,4 +19,8 @@ ollama run llama3.1:8b
 
 # 3) UI
 python -m streamlit run app/streamlit_app.py
+
+# 4) Ragas
+python -m eval.eval_ragas 
 ```
+

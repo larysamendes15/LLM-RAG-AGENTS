@@ -8,18 +8,11 @@ import chromadb
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-
-# ----------------------------
-# Config (via env)
-# ----------------------------
 PERSIST_DIR = os.getenv("PERSIST_DIR", "data/chroma_reforma_textos_legais")
 COLLECTION = os.getenv("COLLECTION", "reforma_textos_legais")
 EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "BAAI/bge-m3")
 
 
-# ----------------------------
-# Singletons
-# ----------------------------
 @lru_cache(maxsize=1)
 def _emb():
     return HuggingFaceEmbeddings(model_name=EMBEDDINGS_MODEL)
@@ -36,10 +29,6 @@ def _vs():
         embedding_function=_emb(),
     )
 
-
-# ----------------------------
-# Helpers
-# ----------------------------
 def _to_payload(docs) -> List[Dict[str, Any]]:
     out: List[Dict[str, Any]] = []
     for d in docs or []:
@@ -55,9 +44,6 @@ def _to_payload(docs) -> List[Dict[str, Any]]:
     return out
 
 
-# ----------------------------
-# Retrieval (TOP-1 SEM THRESHOLD)
-# ----------------------------
 def retrieve_top1(query: str) -> List[Dict[str, Any]]:
     """
     Sempre retorna o top-1:
@@ -102,10 +88,9 @@ def retrieve_top1(query: str) -> List[Dict[str, Any]]:
         return []
 
 
-# (opcional) log de contagem da coleção — útil para depuração
 try:
     _ = _vs()
-    count = _vs()._collection.count()  # atributo interno do wrapper
+    count = _vs()._collection.count() 
     print(f"[Chroma] coleção='{COLLECTION}' em '{PERSIST_DIR}' → {count} documentos")
 except Exception as e:
     print(f"[Chroma] não foi possível contar documentos: {e}")
