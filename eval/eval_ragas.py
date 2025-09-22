@@ -2,6 +2,7 @@ import os, sys, time, json
 import pandas as pd
 from datasets import Dataset
 from ragas import evaluate
+from ragas.run_config import RunConfig
 from ragas.metrics import faithfulness, answer_relevancy
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -16,7 +17,7 @@ from src.graph import get_graph, GraphState
 from langchain_ollama import ChatOllama
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-OLLAMA_JUDGE_MODEL = os.getenv("OLLAMA_JUDGE_MODEL", "llama3.1:8b") 
+OLLAMA_JUDGE_MODEL = os.getenv("OLLAMA_JUDGE_MODEL", "mistral:7b") 
 
 def make_ollama_judge() -> ChatOllama:
     # Para avaliação, usar temperatura 0 (determinístico) e contexto amplo
@@ -29,11 +30,7 @@ def make_ollama_judge() -> ChatOllama:
 
 
 def make_embeddings():
-# use o mesmo modelo de embeddings que você já usa no retriever,
-# ou um default leve/estável:
-    model_name = os.getenv("RAGAS_EMBEDDINGS_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
-    # se quiser exatamente o mesmo do seu retriever, use:
-    # model_name = os.getenv("EMBEDDINGS_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+    model_name = os.getenv("RAGAS_EMBEDDINGS_MODEL", "BAAI/bge-m3")
     return HuggingFaceEmbeddings(model_name=model_name)
 
 def run_eval():
@@ -59,10 +56,10 @@ def run_eval():
         answer = (out.get("answer") or "").strip()
         chunks = out.get("chunks", []) or out.get("used_chunks", []) or []
         context_texts = []
-        for c in chunks[:3]:                 # até top-3
+        for c in chunks:
             txt = c.get("content", "")
             if isinstance(txt, str) and txt.strip():
-                context_texts.append(txt[:2000])  # limita para não estourar tokens
+                context_texts.append(txt)
         if not context_texts:
             context_texts = [""]  # RAGAS requer lista não vazia
 
@@ -75,7 +72,7 @@ def run_eval():
         })
         print(f"[{i:02d}/{len(qs)}] {elapsed_ms} ms | '{q[:70]}...'")
 
-    # 5) DataFrame -> Dataset (formato esperado pelo RAGAS)
+    # 5) DataFrame -> Dataset 
     df = pd.DataFrame(rows)
     ds = Dataset.from_pandas(df[["question", "answer", "contexts", "ground_truth"]])
 
@@ -86,22 +83,21 @@ def run_eval():
         ds,
         metrics=[faithfulness, answer_relevancy],
         llm=judge,
-        embeddings=embedder,   # 👈 evita fallback para OpenAIEmbeddings
+        embeddings=embedder,
+        run_config=RunConfig(timeout=300, max_workers=8)
     )
     print(result)
+    df_result = result.to_pandas()
+    df_result.to_csv('eval_ragas_result.csv', index=False, encoding="utf-8")
+
+    df = df.merge(df_result, how='inner', left_on='question', right_on='user_input')
 
     # 7) Persistir resultados
     os.makedirs("eval", exist_ok=True)
     df.to_csv("eval/raw_results.csv", index=False, encoding="utf-8")
 
-    # Extrair médias (compat. com variações do ragas)
-    try:
-        faith = float(result["faithfulness"])
-        relev = float(result["answer_relevancy"])
-    except Exception:
-        # fallback bem simples caso a estrutura varie
-        faith = None
-        relev = None
+    faith = float(df['faithfulness'].mean())
+    relev = float(df['answer_relevancy'].mean())
 
     lat_stats = df["latency_ms"].describe()
     p50 = int(df["latency_ms"].quantile(0.5))
@@ -110,25 +106,29 @@ def run_eval():
     with open("eval/report.md", "w", encoding="utf-8") as f:
         f.write("# Resultado de Avaliação (RAGAS)\n\n")
         f.write(f"- **Amostras**: {len(df)}\n")
-        f.write(f"- **Faithfulness (média)**: {faith:.3f}\n" if isinstance(faith, (int, float,)) else "- **Faithfulness (média)**: n/a\n")
-        f.write(f"- **Answer Relevancy (média)**: {relev:.3f}\n\n" if isinstance(relev, (int, float,)) else "- **Answer Relevancy (média)**: n/a\n\n")
+        f.write(f"- **Faithfulness (média)**: {faith:.3f}\n")
+        f.write(f"- **Answer Relevancy (média)**: {relev:.3f}\n\n")
 
         f.write("## Latência (ms)\n")
         f.write(f"- média: {int(lat_stats['mean'])} | min: {int(lat_stats['min'])} | max: {int(lat_stats['max'])}\n")
         f.write(f"- p50: {p50} | p95: {p95}\n\n")
 
         f.write("## Amostras (primeiras 5)\n")
-        for _, row in df.head(5).iterrows():
+        for _, row in df.iterrows():
             f.write("### Pergunta\n")
             f.write(row["question"] + "\n\n")
             f.write("**Resposta (modelo):**\n\n")
             ans = row["answer"] or ""
-            f.write((ans[:1500] + ("...\n\n" if len(ans) > 1500 else "\n\n")))
+            f.write(ans + "\n\n")
             f.write("**Ground truth:**\n\n")
             f.write((row["ground_truth"] or "") + "\n\n")
-            f.write("**Contextos (até 3):**\n")
-            for c in row["contexts"][:3]:
-                f.write(f"- { (c[:160] + '...') if len(c) > 160 else c }\n")
+            f.write("Answer relevance: ")
+            f.write(str(row["answer_relevancy"]) + "\n\n")
+            f.write("Faithfulness: ")
+            f.write(str(row["faithfulness"]) + "\n\n")
+            f.write("**Contextos:**\n")
+            for c in row["contexts"]:
+                f.write(f"- {c}\n")
             f.write("\n---\n\n")
 
     print("[DONE] Avaliação salva em eval/report.md e eval/raw_results.csv")

@@ -1,14 +1,14 @@
 [
   {
-    "question": "O que é o IBS na Reforma Tributária e qual ente é responsável por sua gestão?",
+    "question": "O que é o IBS na Reforma Tributária?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
-    "ground_truth_support": "O Imposto sobre Bens e Serviços (IBS) é um tributo de base ampla que substitui ICMS e ISS, de competência compartilhada, com gestão por Comitê Gestor nacional.",
+    "ground_truth_support": "O Imposto sobre Bens e Serviços (IBS) é um tributo de base ampla que substitui ICMS e ISS, de competência compartilhada.",
     "expected_source_contains": "planalto.gov.br"
   },
   {
     "question": "O que é a CBS e quais tributos federais ela substitui?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
-    "ground_truth_support": "A Contribuição sobre Bens e Serviços (CBS) substitui PIS, PIS-Importação, Pasep e Cofins, unificando a tributação federal sobre consumo.",
+    "ground_truth_support": "A Contribuição sobre Bens e Serviços (CBS) substitui PIS e COFINS, unificando a tributação federal sobre consumo.",
     "expected_source_contains": "planalto.gov.br"
   },
   {
@@ -30,7 +30,7 @@
     "expected_source_contains": "gov.br"
   },
   {
-    "question": "Qual é o princípio de não cumulatividade no IBS/CBS?",
+    "question": "Qual é o princípio da não cumulatividade no IBS/CBS?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "Crédito financeiro amplo: todo imposto incidente nas etapas anteriores é creditável, evitando tributação em cascata.",
     "expected_source_contains": "planalto.gov.br"
@@ -84,12 +84,6 @@
     "expected_source_contains": "planalto.gov.br"
   },
   {
-    "question": "Há mecanismo de devolução de créditos acumulados?",
-    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2024-04-23_regulamentacao-da-reforma-tributaria_completa.pdf",
-    "ground_truth_support": "A regulamentação prevê devolução de saldos credores em prazos e condições definidos, reforçando a não cumulatividade plena.",
-    "expected_source_contains": "gov.br"
-  },
-  {
     "question": "Como o novo sistema trata Zona Franca de Manaus e regimes especiais já existentes?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/perguntas-e-respostas-reforma-tributaria_.pdf",
     "ground_truth_support": "ZFM e outros regimes recebem tratamento específico de transição, preservando vantagens competitivas conforme regras constitucionais.",
@@ -110,7 +104,7 @@
   {
     "question": "Como ficam os benefícios fiscais do ICMS existentes?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
-    "ground_truth_support": "Há regra de transição e extinção gradual; benefícios são substituídos por instrumentos como FDR e créditos financeiros.",
+    "ground_truth_support": "Há regra de transição e extinção gradual; em vez de serem substituídos, os compromissos passados serão compensados por um fundo específico, e um novo Fundo de Desenvolvimento Regional (FDR) será criado para fomentar o crescimento dos estados de forma mais ampla.",
     "expected_source_contains": "planalto.gov.br"
   },
   {
@@ -118,12 +112,6 @@
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "O Comitê Gestor gerencia a arrecadação e distribuição automática da receita aos entes federados conforme destino do consumo.",
     "expected_source_contains": "planalto.gov.br"
-  },
-  {
-    "question": "Como o novo sistema lida com importações e exportações?",
-    "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/perguntas-e-respostas-reforma-tributaria_.pdf",
-    "ground_truth_support": "Importações sofrem a mesma carga do produto nacional; exportações são desoneradas, com manutenção de créditos.",
-    "expected_source_contains": "gov.br"
   },
   {
     "question": "Existe limite ou teto para alíquota padrão agregada?",
@@ -134,7 +122,7 @@
   {
     "question": "O que muda na tributação de telecomunicações com IBS/CBS?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2024-04-23_regulamentacao-da-reforma-tributaria_completa.pdf",
-    "ground_truth_support": "Telecomunicações podem ter regime específico/monofásico e regras de crédito para não cumulatividade.",
+    "ground_truth_support": "O setor deixa as alíquotas altas de ICMS e entra na regra geral, com alíquota padrão.",
     "expected_source_contains": "gov.br"
   },
   {
@@ -148,11 +136,5 @@
     "ground_truth_url": "https://espacolegislacao.totvs.com/reforma-tributaria/",
     "ground_truth_support": "Modelo com legislação uniforme, crédito amplo e recolhimento centralizado via Comitê Gestor simplifica o cumprimento.",
     "expected_source_contains": "espacolegislacao.totvs.com"
-  },
-  {
-    "question": "Qual é o impacto esperado na guerra fiscal entre estados?",
-    "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
-    "ground_truth_support": "Com tributação no destino e FDR, a reforma busca reduzir a guerra fiscal baseada em benefícios de origem.",
-    "expected_source_contains": "planalto.gov.br"
   }
 ]

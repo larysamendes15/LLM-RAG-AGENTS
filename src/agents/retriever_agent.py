@@ -14,7 +14,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 # ----------------------------
 PERSIST_DIR = os.getenv("PERSIST_DIR", "data/chroma_reforma_textos_legais")
 COLLECTION = os.getenv("COLLECTION", "reforma_textos_legais")
-EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "thenlper/gte-small")
+EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "BAAI/bge-m3")
 
 
 # ----------------------------
@@ -69,14 +69,14 @@ def retrieve_top1(query: str) -> List[Dict[str, Any]]:
 
     # 1) relevância (maior = melhor)
     try:
-        pairs: List[Tuple[Any, float]] = vs.similarity_search_with_relevance_scores(query, k=1)
+        pairs: List[Tuple[Any, float]] = vs.similarity_search_with_relevance_scores(query, k=5)
         if pairs:
             doc, rel = pairs[0]
             try:
                 print(f"[retrieve] rel={float(rel):.3f}  q='{query[:80]}'")
             except Exception:
                 pass
-            return _to_payload([doc])
+            return _to_payload(list(map(lambda doc: doc[0], pairs)))
     except Exception:
         pass
 

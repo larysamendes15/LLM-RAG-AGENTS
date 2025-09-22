@@ -76,7 +76,7 @@ def node_answer(state: GraphState) -> GraphState:
     q = state["question"]
     chunks = state.get("chunks", [])
     top = chunks[0] if chunks else {"content": "", "source": ""}
-    ans = answer_best(q, top)
+    ans = answer_best(q, chunks)
     return {"answer": ans}
 
 def node_self_check(state: GraphState) -> GraphState:
@@ -97,7 +97,7 @@ def get_graph():
     g.add_node("retrieve", node_retrieve)
     g.add_node("answer", node_answer)
     g.add_node("self_check", node_self_check)
-
+    
     g.set_entry_point("retrieve")
     g.add_edge("retrieve", "answer")
     g.add_edge("answer", "self_check")

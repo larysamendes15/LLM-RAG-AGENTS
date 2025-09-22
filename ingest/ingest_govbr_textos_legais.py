@@ -23,9 +23,9 @@ import chromadb
 # Config
 # ----------------------------
 PERSIST_DIR = os.getenv("PERSIST_DIR", "data/chroma_reforma_textos_legais")
-EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "thenlper/gte-small")
+EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "BAAI/bge-m3")
 COLLECTION = os.getenv("COLLECTION", "reforma_textos_legais")
-RESET_COLLECTION = os.getenv("RESET_COLLECTION", "false").lower() in {"1", "true", "yes", "y"}
+RESET_COLLECTION = os.getenv("RESET_COLLECTION", "true").lower() in {"1", "true", "yes", "y"}
 
 SOURCES = [
     # PDFs (slides e documentos)
