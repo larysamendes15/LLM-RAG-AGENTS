@@ -3,138 +3,240 @@
     "question": "O que é o IBS na Reforma Tributária?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "O Imposto sobre Bens e Serviços (IBS) é um tributo de base ampla que substitui ICMS e ISS, de competência compartilhada.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "A tributação sobre o consumo no Brasil se dá pela incidência de cinco tributos distintos: Imposto sobre Produtos Industrializados (IPI), Imposto sobre Circulação de Mercadorias e Serviços (ICMS), Imposto sobre Serviços de Qualquer Natureza (ISSQN), Contribuição para o Programa de Integração Social (PIS) e Contribuição para o Financiamento da Seguridade Social (Cofins). A reforma tributária, a partir da Emenda Constitucional 132, de 2023, tem como objetivo simplificar essa estrutura, concentrando-se principalmente na incidência de dois tributos: o Imposto Sobre Bens e Serviços (IBS) e a Contribuição Sobre Bens e Serviços (CBS). O Imposto Sobre Bens e Serviços (IBS) é instituído pelo art. 156-A da Ementa Constitucional 123, de 2023."
+    ]
   },
   {
     "question": "O que é a CBS e quais tributos federais ela substitui?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "A Contribuição sobre Bens e Serviços (CBS) substitui PIS e COFINS, unificando a tributação federal sobre consumo.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "Assim, a Contribuição sobre Bens e Serviços (CBS) também é proposta pela EC 132, de 2023, a partir do art. 195. Art. 195. A seguridade social será financiada por toda a sociedade [...] V. sobre bens e serviços, nos termos de lei complementar. (Incluído pela Emenda Constitucional n.º 132, de 2023). A partir das recomendações e das diretrizes da EC 132, de 2023, observa-se que a alíquota da CBS pode ser estabelecida por meio de lei ordinária. Esta contribuição não será parte de sua própria base de cálculo, nem da base de cálculo do IPI, ICMS, PIS e Cofins.",
+      "O que a Reforma Tributária faz? IVA Dual CBS FEDERAL (substitui PIS, Cofins e IPI) IBS SUBNACIONAL (substitui ICMS e ISS)"
+    ]
   },
   {
     "question": "Qual é a finalidade do Imposto Seletivo (‘imposto do pecado’) na EC 132/2023?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "Instituído para desestimular o consumo de bens e serviços prejudiciais à saúde ou ao meio ambiente, sem função arrecadatória principal.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "O Imposto Seletivo (IS), que é um dos tributos adicionados por essa emenda, está sob a competência da União Federal. Sua implementação requer a elaboração de uma lei complementar que define suas características e diretrizes. Esse imposto possui uma abordagem específica, podendo ter como base tributável a produção, extração ou importação de bens e serviços que apresentem impactos negativos à saúde ou ao meio ambiente.",
+      "IS é uma modalidade de tributo federal projetada para desestimular o consumo de bens e serviços que possam ser prejudiciais à saúde ou ao meio ambiente. Um exemplo concreto da aplicação do Imposto Seletivo é evidenciado na tributação de produtos como cigarros e bebidas alcoólicas. Esses itens estão sujeitos a uma carga tributária mais elevada por meio do IS, refletindo a intenção de desencorajar o consumo de produtos considerados prejudiciais para a sociedade e o meio ambiente."
+    ]
   },
   {
     "question": "Haverá sistema de cashback para famílias de baixa renda? Em que consiste?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/perguntas-e-respostas-reforma-tributaria_.pdf",
     "ground_truth_support": "O modelo prevê devolução de parte do imposto pago (cashback) para famílias de baixa renda, com desenho em lei complementar.",
-    "expected_source_contains": "gov.br"
+    "expected_source_contains": "gov.br",
+    "chunks": [
+      "O cashback é a devolução, para as famílias, de parte do imposto pago, beneficiando sobretudo as famílias de menor renda. Esse mecanismo já vem sendo utilizado por países como o Equador, o Uruguai e a Colômbia para tornar a tributação sobre o consumo mais progressiva.",
+      "Lei Geral | CASHBACK PARA FAMÍLIAS DE BAIXA RENDA • Devoluções de: ‐100% da CBS e 20% do IBS para aquisição de botijão de gás (13 kg) ‐50% da CBS e 20% do IBS para as contas de luz, de água e esgoto e de gás encanado ‐20% da CBS e do IBS sobre os demais produtos. • Benefício direto para famílias com renda mensal até ½ salário-mínimo, integradas ao Cadastro Único."
+    ]
   },
   {
     "question": "Como a cesta básica nacional impacta a alíquota do novo sistema?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2024-04-23_regulamentacao-da-reforma-tributaria_completa.pdf",
     "ground_truth_support": "Itens da cesta básica nacional podem ter alíquota reduzida ou zerada conforme regulamentação para proteção de renda.",
-    "expected_source_contains": "gov.br"
+    "expected_source_contains": "gov.br",
+    "chunks": [
+      "A Reforma cria a cesta básica nacional de alimentos, que terá alíquota zero de CBS e IBS, e que considerará aspectos regionais e alimentação saudável e nutricionalmente adequada. Os itens que comporão esta cesta serão definidos em lei complementar.",
+      "CESTA BÁSICA NACIONAL DE ALIMENTOS • Alimentos consumidos majoritariamente pelos mais pobres: arroz, feijão, farinha, macarrão etc. • REDUÇÃO DAS ALÍQUOTAS A ZERO: diretrizes da EC 132 definem que ovos, produtos hortícolas e frutas terão alíquota zero. A carga tributária média dos alimentos incluídos na cesta básica e na cesta estendida vai cair de 11,7% para 4,9%."
+    ]
   },
+
   {
     "question": "Qual é o princípio da não cumulatividade no IBS/CBS?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "Crédito financeiro amplo: todo imposto incidente nas etapas anteriores é creditável, evitando tributação em cascata.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "Não cumulatividade plena: os tributos pagos ao longo da cadeia gerarão créditos imediatos, inclusive os pagos na aquisição de bens do ativo fixo e bens de uso e consumo utilizados na atividade econômica.",
+      "A CBS será não cumulativa, permitindo a compensação do valor devido com o montante cobrado em todas as operações antecedentes; vedação para bens de uso e consumo pessoal definida em lei complementar.",
+      "Formas de utilização dos créditos apropriados: compensação com débitos e ressarcimento."
+    ]
   },
   {
     "question": "Como será feita a transição do ICMS/ISS para o IBS?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2023-11-14_cartilha_reforma-tributaria_atualizada-pos-senado.pdf",
     "ground_truth_support": "Haverá período de transição com alíquotas gradativas e extinção progressiva dos tributos atuais até a migração completa para o IBS.",
-    "expected_source_contains": "gov.br"
+    "expected_source_contains": "gov.br",
+    "chunks": [
+      "A transição para a sociedade será iniciada em 2026 e concluída em 2033, ano em que os atuais tributos sobre o consumo serão extintos e o novo modelo estará plenamente vigente.",
+      "2026: ano de calibragem com IBS a 0,1% e CBS a 0,9%, compensáveis com PIS/Cofins; recolhimento pode ser dispensado mediante cumprimento de obrigações acessórias.",
+      "De 2029 a 2032, transição do ICMS e do ISS para o IBS via aumento gradual da alíquota do IBS e redução gradual das alíquotas do ICMS e do ISS (10% em 2029; 20% em 2030; 30% em 2031; 40% em 2032; 100% em 2033)."
+    ]
   },
   {
     "question": "Qual é a base de incidência do IBS/CBS?",
     "ground_truth_url": "https://espacolegislacao.totvs.com/reforma-tributaria/",
     "ground_truth_support": "Tributos de base ampla sobre bens e serviços, incidindo no destino, alcançando operações com bens materiais, imateriais e serviços.",
-    "expected_source_contains": "espacolegislacao.totvs.com"
+    "expected_source_contains": "espacolegislacao.totvs.com",
+    "chunks": [
+      "Base ampla de incidência: IBS e CBS alcançarão todas as operações com bens materiais e imateriais, inclusive direitos, ou serviços (alienação, locação, cessão, licenciamento, arrendamento mercantil e prestação de serviços).",
+      "IBS e CBS incidirão também sobre a importação de bens materiais ou imateriais, inclusive direitos, ou de serviços realizada por pessoa física ou jurídica.",
+      "Tributação no destino: os tributos serão destinados ao ente onde estão localizados os consumidores dos bens ou dos serviços."
+    ]
   },
   {
     "question": "O IBS incide no destino ou na origem?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "O IBS adota o princípio do destino: a receita é apropriada no local do consumo.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "Tributação no destino: os tributos serão destinados ao ente onde estão localizados os consumidores dos bens ou dos serviços.",
+      "O IBS incidirá sobre operações com bens e serviços com apropriação da receita no local do consumo, conforme diretrizes da EC 132/2023."
+    ]
   },
   {
     "question": "O que é o Fundo de Desenvolvimento Regional (FDR) criado pela Reforma?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "Fundo destinado a reduzir desigualdades regionais e apoiar desenvolvimento, financiado pela União, com critérios definidos em lei.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "A Reforma Tributária institui o Fundo de Desenvolvimento Regional, financiado pela União, com a finalidade de reduzir desigualdades regionais e apoiar o desenvolvimento, observados critérios definidos em lei complementar.",
+      "Durante a transição e após sua conclusão, caberá ao fundo apoiar investimentos e políticas de desenvolvimento regional, segundo regras e repartições estabelecidas em lei."
+    ]
   },
   {
     "question": "Como ficam os regimes específicos (ex.: combustíveis, energia) no novo modelo?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2024-04-23_regulamentacao-da-reforma-tributaria_completa.pdf",
     "ground_truth_support": "Há previsão de regimes diferenciados e monofásicos para setores como combustíveis, energia e telecomunicações, definidos em lei complementar.",
-    "expected_source_contains": "gov.br"
+    "expected_source_contains": "gov.br",
+    "chunks": [
+      "Regimes específicos de tributação, nos termos de lei complementar: combustíveis e lubrificantes com possibilidade de cobrança monofásica em valor fixo por unidade de medida (ad rem), uniforme nacionalmente, com creditamento permitido ao adquirente para suas atividades.",
+      "Regimes diferenciados para setores como energia elétrica, telecomunicações e serviços financeiros, com possibilidade de ajustes em alíquotas, regras de creditamento e bases de cálculo, conforme legislação complementar.",
+      "Durante 2027–2028 aplicam-se regras de regimes diferenciados e específicos; combustíveis seguem tratamento próprio fora das alíquotas de referência iniciais."
+    ]
   },
   {
     "question": "Haverá alíquota única de referência?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria",
     "ground_truth_support": "O sistema prevê alíquota padrão, com reduções/isenções específicas; o percentual exato é definido na regulamentação.",
-    "expected_source_contains": "gov.br"
+    "expected_source_contains": "gov.br",
+    "chunks": [
+      "Adota-se alíquota padrão como regra geral; reduções e isenções específicas são definidas em lei complementar (cesta básica, regimes diferenciados etc.).",
+      "As alíquotas de referência do IBS e da CBS serão fixadas anualmente pelo Senado Federal durante a transição, com metodologia homologada pelo TCU, visando manter a carga tributária; caso o ente não fixe sua alíquota, aplica-se a alíquota de referência.",
+      "União, Estados e Municípios terão autonomia para fixar suas alíquotas padrão, podendo usar a referência como base (acréscimo/redução)."
+    ]
   },
   {
     "question": "Quem compõe o Comitê Gestor do IBS?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "Composto por representantes dos entes subnacionais, responsável por gerir a arrecadação e distribuição do IBS.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "A instância máxima de deliberação do Comitê Gestor do IBS será composta de forma paritária por: 27 membros representando cada Estado e o DF; 27 membros representando os Municípios e o DF.",
+      "Deliberações aprovadas se obtiverem: (i) Estados/DF — maioria absoluta + representantes que somem >50% da população; (ii) Municípios/DF — maioria absoluta.",
+      "Atribuições: editar regulamento único; uniformizar interpretação; arrecadar o imposto, efetuar compensações e distribuir as receitas; decidir o contencioso administrativo; assegurar rápida devolução de créditos de IBS."
+    ]
   },
   {
     "question": "O imposto seletivo pode incidir sobre exportações?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "A EC 132 resguarda desoneração das exportações no âmbito do IBS/CBS; seletivo tem finalidade extrafiscal e hipóteses definidas.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "Exportações desoneradas no novo modelo: o IBS e a CBS asseguram a não incidência/neutralidade nas operações de exportação, evitando cumulatividade e preservando competitividade externa.",
+      "Imposto Seletivo: tributo federal de caráter extrafiscal para desestimular bens/serviços prejudiciais à saúde ou ao meio ambiente; hipóteses, bases e exceções definidas em lei complementar."
+    ]
   },
   {
     "question": "Como o novo sistema trata Zona Franca de Manaus e regimes especiais já existentes?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/perguntas-e-respostas-reforma-tributaria_.pdf",
     "ground_truth_support": "ZFM e outros regimes recebem tratamento específico de transição, preservando vantagens competitivas conforme regras constitucionais.",
-    "expected_source_contains": "gov.br"
+    "expected_source_contains": "gov.br",
+    "chunks": [
+      "Premissa: manutenção do diferencial competitivo da Zona Franca de Manaus e das Áreas de Livre Comércio; consolidação e simplificação dos instrumentos atuais (desoneração de vendas destinadas à ZFM/ALCs, incentivo à economia interna).",
+      "Tratamento favorecido à ZFM implementado por: (i) alteração de alíquotas e regras de creditamento de IBS/CBS; (ii) instrumentos fiscais/econômicos/financeiros previstos constitucionalmente; (iii) criação do Fundo de Sustentabilidade e Diversificação Econômica do Estado do Amazonas, com recursos da União.",
+      "Empresas do Simples: preservação do regime e opções para recolher IBS/CBS pelo Simples com transferência de créditos ou pelo regime normal; redução da necessidade de substituição tributária."
+    ]
   },
   {
     "question": "O IBS/CBS incidem sobre serviços financeiros?",
     "ground_truth_url": "https://espacolegislacao.totvs.com/reforma-tributaria/",
     "ground_truth_support": "Há previsão de incidência sobre diversas operações, incluindo intermediação e serviços financeiros, com regras específicas.",
-    "expected_source_contains": "espacolegislacao.totvs.com"
+    "expected_source_contains": "espacolegislacao.totvs.com",
+    "chunks": [
+      "Base ampla de incidência: IBS e CBS alcançam operações com bens materiais e imateriais e serviços; tributação no destino.",
+      "Regime específico para serviços financeiros: possibilidade de ajustes em alíquotas, regras de creditamento e base de cálculo; tributação pode se dar sobre receita ou faturamento para lidar com peculiaridades do setor.",
+      "Incidência sobre intermediação e demais serviços financeiros com regras definidas em lei complementar/regulamentação específica."
+    ]
   },
   {
     "question": "Qual o tratamento para educação e saúde?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2023-11-14_cartilha_reforma-tributaria_atualizada-pos-senado.pdf",
     "ground_truth_support": "Previsão de alíquotas reduzidas e/ou isenções para serviços essenciais como educação e saúde, conforme critérios legais.",
-    "expected_source_contains": "gov.br"
+    "expected_source_contains": "gov.br",
+    "chunks": [
+      "Educação: IBS e CBS reduzidos em 60% (40% da alíquota padrão) para ensino infantil, fundamental, médio/técnico, superior (graduação/pós/cursos de extensão); alíquota zero na CBS para PROUNI; inclusão de educação especial (libras, braile, línguas nativas).",
+      "Saúde: IBS e CBS reduzidos em 60% para serviços de saúde, ampla lista de medicamentos e dispositivos; IBS e CBS zerados para listas específicas (medicamentos e dispositivos priorizados) e para compras públicas desses itens.",
+      "Mantém partilhas e vinculações constitucionais (Educação/FUNDEB e Saúde), preservando o financiamento dos serviços essenciais."
+    ]
   },
   {
     "question": "Como ficam os benefícios fiscais do ICMS existentes?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "Há regra de transição e extinção gradual; em vez de serem substituídos, os compromissos passados serão compensados por um fundo específico, e um novo Fundo de Desenvolvimento Regional (FDR) será criado para fomentar o crescimento dos estados de forma mais ampla.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "Fundo de Compensação de Benefícios Fiscais do ICMS: compensará, de 2029 a 2032, empresas titulares de benefícios onerosos concedidos por prazo certo e sob condição; recursos aportados pela União conforme cronograma legal.",
+      "Criação do Fundo de Desenvolvimento Regional (FDR/FNDR), com recursos da União, destinado a reduzir desigualdades regionais e apoiar o desenvolvimento, conforme critérios definidos em lei complementar."
+    ]
   },
   {
     "question": "A arrecadação do IBS será compartilhada automaticamente aos entes?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "O Comitê Gestor gerencia a arrecadação e distribuição automática da receita aos entes federados conforme destino do consumo.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "Comitê Gestor do IBS: órgão paritário dos entes subnacionais encarregado de arrecadar o imposto, efetuar compensações e distribuir automaticamente as receitas.",
+      "Distribuição da receita do IBS conforme o princípio do destino, com regras uniformes previstas em lei complementar."
+    ]
   },
   {
     "question": "Existe limite ou teto para alíquota padrão agregada?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria",
     "ground_truth_support": "O desenho prevê alíquota padrão calibrada para manter carga neutra; limites e percentuais vêm na lei complementar.",
-    "expected_source_contains": "gov.br"
+    "expected_source_contains": "gov.br",
+    "chunks": [
+      "Durante a transição, as alíquotas de referência do IBS e da CBS serão fixadas anualmente pelo Senado Federal, com metodologia homologada pelo TCU, visando manter a carga tributária.",
+      "Trava de carga: se, ao final da transição, a carga como % do PIB exceder a média 2012–2021, as alíquotas de referência são reduzidas; percentuais exatos definidos em regulamentação/lei complementar."
+    ]
   },
   {
     "question": "O que muda na tributação de telecomunicações com IBS/CBS?",
     "ground_truth_url": "https://www.gov.br/fazenda/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria/arquivos/2024-04-23_regulamentacao-da-reforma-tributaria_completa.pdf",
     "ground_truth_support": "O setor deixa as alíquotas altas de ICMS e entra na regra geral, com alíquota padrão.",
-    "expected_source_contains": "gov.br"
+    "expected_source_contains": "gov.br",
+    "chunks": [
+      "Base ampla e regra geral: serviços de telecomunicações passam a ser tributados pelo IBS/CBS na alíquota padrão, com não cumulatividade plena e tributação no destino.",
+      "Regimes específicos permanecem para casos delimitados em lei complementar; telecomunicações entram na regra geral, com simplificação e uniformização."
+    ]
   },
   {
     "question": "Como a reforma trata externalidades negativas pelo Imposto Seletivo?",
     "ground_truth_url": "https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc132.htm",
     "ground_truth_support": "O seletivo tem caráter extrafiscal, direcionado a bens/serviços nocivos à saúde ou ao meio ambiente, com alíquotas específicas.",
-    "expected_source_contains": "planalto.gov.br"
+    "expected_source_contains": "planalto.gov.br",
+    "chunks": [
+      "Imposto Seletivo: tributo federal de caráter extrafiscal para desestimular bens e serviços prejudiciais à saúde e ao meio ambiente, com hipóteses e alíquotas definidas em lei complementar.",
+      "Incidência possível sobre produção, extração ou importação de bens/serviços nocivos; finalidade principal é corrigir externalidades negativas, não arrecadar."
+    ]
   },
   {
     "question": "Quais mecanismos aumentam a transparência e simplificação no cumprimento das obrigações?",
     "ground_truth_url": "https://espacolegislacao.totvs.com/reforma-tributaria/",
     "ground_truth_support": "Modelo com legislação uniforme, crédito amplo e recolhimento centralizado via Comitê Gestor simplifica o cumprimento.",
-    "expected_source_contains": "espacolegislacao.totvs.com"
+    "expected_source_contains": "espacolegislacao.totvs.com",
+    "chunks": [
+      "Legislação uniforme e regras comuns: fatos geradores, bases de cálculo, hipóteses de não incidência e sujeitos passivos padronizados para IBS/CBS, reduzindo disputas e complexidade.",
+      "Não cumulatividade plena com crédito financeiro amplo e ressarcimento/compensação, tornando o valor do tributo transparente ao longo da cadeia.",
+      "Modelo de arrecadação centralizada pelo Comitê Gestor do IBS, com distribuição automática das receitas e contencioso administrativo unificado, simplificando obrigações acessórias."
+    ]
   }
 ]
