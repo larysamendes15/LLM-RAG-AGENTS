@@ -2,20 +2,30 @@ from __future__ import annotations
 
 import os
 from typing import Dict, List
+from dotenv import load_dotenv
 
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
 
 FALLBACK_NO_CONTEXT = "Não foi encontrado contexto para a pergunta solicitada."
 
-def _build_llm() -> ChatOllama:
-    model = os.getenv("OLLAMA_MODEL", "mistral:7b")
-    base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-    num_ctx = int(os.getenv("OLLAMA_NUM_CTX", "4096"))
-    num_pred = int(os.getenv("OLLAMA_NUM_PREDICT", "512"))
-    temp = float(os.getenv("OLLAMA_TEMPERATURE", "0.1"))
-    return ChatOllama(base_url=base_url, model=model, num_ctx=num_ctx, num_predict=num_pred, temperature=temp)
+load_dotenv()
+def _build_llm() -> ChatNVIDIA:
+    model = os.getenv("NVIDIA_MODEL", "meta/llama-3.1-8b-instruct")  
+    api_key = os.getenv("NVIDIA_API_KEY")
+    temperature = float(os.getenv("NVIDIA_TEMPERATURE", "0.1"))
+    max_tokens = int(os.getenv("NVIDIA_MAX_TOKENS", "512"))
 
+    if not api_key:
+        raise ValueError("Defina a variável de ambiente NVIDIA_API_KEY")
+
+    return ChatNVIDIA(
+        model=model,
+        api_key=api_key,
+        temperature=temperature,
+        max_tokens=max_tokens,
+    )
 
 ANSWER_PROMPT_BEST = PromptTemplate.from_template(
     """

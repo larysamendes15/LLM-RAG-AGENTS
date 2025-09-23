@@ -55,7 +55,7 @@ def retrieve_top1(query: str) -> List[Dict[str, Any]]:
 
     # 1) relevância (maior = melhor)
     try:
-        pairs: List[Tuple[Any, float]] = vs.similarity_search_with_relevance_scores(query, k=5)
+        pairs: List[Tuple[Any, float]] = vs.similarity_search_with_relevance_scores(query, k=3)
         if pairs:
             doc, rel = pairs[0]
             try:
