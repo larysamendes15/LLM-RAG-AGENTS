@@ -6,21 +6,16 @@ from ragas.run_config import RunConfig
 from ragas.metrics import faithfulness, answer_relevancy
 from langchain_huggingface import HuggingFaceEmbeddings
 
-# Permite rodar com: python -m eval.eval_ragas (a partir da raiz do projeto)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.graph import get_graph, GraphState
 
-# =========================
-# Config do LLM avaliador (Ollama)
-# =========================
 from langchain_ollama import ChatOllama
 
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_JUDGE_MODEL = os.getenv("OLLAMA_JUDGE_MODEL", "mistral:7b") 
 
 def make_ollama_judge() -> ChatOllama:
-    # Para avaliação, usar temperatura 0 (determinístico) e contexto amplo
     return ChatOllama(
         model=OLLAMA_JUDGE_MODEL,
         base_url=OLLAMA_BASE_URL,
@@ -34,11 +29,9 @@ def make_embeddings():
     return HuggingFaceEmbeddings(model_name=model_name)
 
 def run_eval():
-    # 1) Carregar perguntas
     with open("eval/questions.json", "r", encoding="utf-8") as f:
         qs = json.load(f)
 
-    # 2) Grafo da sua aplicação (retriever + answer)
     graph = get_graph()
 
     rows = []
@@ -47,12 +40,10 @@ def run_eval():
         gt = item.get("ground_truth_support", "")
         t0 = time.time()
 
-        # 3) Invocar grafo
         state = GraphState(question=q)
-        out = graph.invoke(state)   # dict
+        out = graph.invoke(state)  
         elapsed_ms = int((time.time() - t0) * 1000)
 
-        # 4) Extrair resposta e contextos
         answer = (out.get("answer") or "").strip()
         chunks = out.get("chunks", []) or out.get("used_chunks", []) or []
         context_texts = []
@@ -61,7 +52,7 @@ def run_eval():
             if isinstance(txt, str) and txt.strip():
                 context_texts.append(txt)
         if not context_texts:
-            context_texts = [""]  # RAGAS requer lista não vazia
+            context_texts = [""] 
 
         rows.append({
             "question": q,
@@ -72,11 +63,9 @@ def run_eval():
         })
         print(f"[{i:02d}/{len(qs)}] {elapsed_ms} ms | '{q[:70]}...'")
 
-    # 5) DataFrame -> Dataset 
     df = pd.DataFrame(rows)
     ds = Dataset.from_pandas(df[["question", "answer", "contexts", "ground_truth"]])
 
-    # 6) LLM avaliador (Ollama) e avaliação
     judge = make_ollama_judge()
     embedder = make_embeddings()
     result = evaluate(
@@ -92,7 +81,6 @@ def run_eval():
 
     df = df.merge(df_result, how='inner', left_on='question', right_on='user_input')
 
-    # 7) Persistir resultados
     os.makedirs("eval", exist_ok=True)
     df.to_csv("eval/raw_results.csv", index=False, encoding="utf-8")
 

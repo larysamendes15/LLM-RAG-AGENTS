@@ -8,13 +8,10 @@ from typing import List, Dict, Any
 
 import streamlit as st
 
-# =========================================
-# Import do GRAFO REAL (sem mock)
-# =========================================
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(PROJECT_ROOT)  # garante 'src' no PYTHONPATH
+sys.path.append(PROJECT_ROOT)
 try:
-    from src.graph import get_graph  # <- seu grafo LangGraph real
+    from src.graph import get_graph
 except Exception as e:
     st.set_page_config(page_title="Aris — erro de import", page_icon="⚠️")
     st.error(
@@ -23,23 +20,15 @@ except Exception as e:
     )
     st.stop()
 
-# Diretórios do Chroma (absolutos para não “trocar” de pasta quando rodar de /app)
 os.environ.setdefault("PERSIST_DIR", os.path.join(PROJECT_ROOT, "data", "chroma_reforma_textos_legais"))
 os.environ.setdefault("COLLECTION", "reforma_textos_legais")
 
-# =========================
-# Branding / Constantes
-# =========================
 APP_NAME = "Aris — Assistente da Reforma Tributária"
 FALLBACK_TEXT = "Não foi encontrado contexto para a pergunta solicitada."
 
-# Dicas para tempo de vida do modelo no Ollama (evita cold start)
 os.environ.setdefault("OLLAMA_KEEP_ALIVE", "10m")
-os.environ.setdefault("OLLAMA_NUM_PREDICT", "192")  # 1 parágrafo enxuto
+os.environ.setdefault("OLLAMA_NUM_PREDICT", "528")
 
-# =========================
-# Helpers
-# =========================
 def _normalize(s: str) -> str:
     s = (s or "").strip().lower()
     s = unicodedata.normalize("NFD", s)
@@ -60,9 +49,6 @@ def ref_link_from_chunk(ch: Dict[str, Any]) -> str | None:
         return None
     return f"{src}" + (f"#page={pg}" if pg is not None else "")
 
-# =========================
-# Page config & CSS (tema claro)
-# =========================
 st.set_page_config(page_title=APP_NAME, page_icon="🏛️", layout="wide")
 st.markdown(
     """
@@ -110,41 +96,27 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# =========================
-# Sidebar
-# =========================
 with st.sidebar:
     st.markdown("### ⚙️ Opções")
     if st.button("🗑️ Limpar conversa", use_container_width=True, type="secondary"):
         st.session_state.messages = []
         st.rerun()
     st.markdown("---")
-# =========================
-# Header
-# =========================
+
 st.markdown(f"""<div class="aris-header"><h1>{APP_NAME}</h1></div>""", unsafe_allow_html=True)
 
-# =========================
-# Cache do grafo real
-# =========================
 @st.cache_resource(show_spinner=False)
 def _graph():
     return get_graph()
 
 graph = _graph()
 
-# =========================
-# Estado de conversa (sem mensagem inicial)
-# =========================
 if "messages" not in st.session_state:
     st.session_state.messages: List[Dict[str, Any]] = []
 
-# =========================
-# Render do histórico
-# =========================
 st.markdown('<div class="chat-wrap">', unsafe_allow_html=True)
 for m in st.session_state.messages:
-    if m["text"] == "...":  # não renderiza marcador
+    if m["text"] == "...": 
         continue
     role = m.get("role", "assistant")
     with st.chat_message("user" if role == "user" else "assistant", avatar="🧑‍💻" if role == "user" else "🏛️"):
@@ -157,9 +129,6 @@ for m in st.session_state.messages:
                 st.markdown(f'<a class="ref-chip" href="{r}" target="_blank">Fonte</a>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# =========================
-# Entrada de chat
-# =========================
 prompt = st.chat_input("Pergunte algo (ex.: O que é cashback?)")
 
 if prompt:
@@ -167,13 +136,15 @@ if prompt:
     st.session_state.messages.append({"role": "assistant", "text": "...", "refs": []})
     st.rerun()
 
-# Gera resposta quando o marcador "..." está no fim
 if st.session_state.messages and st.session_state.messages[-1]["text"] == "...":
     last_prompt = st.session_state.messages[-2]["text"]
 
-    t0 = time.time()
-    result = graph.invoke({"question": last_prompt.strip()})
-    t1 = time.time()
+    with st.chat_message("assistant", avatar="🏛️"):
+        with st.spinner("Consultando a base e elaborando a resposta..."):
+            t0 = time.time()
+            result = graph.invoke({"question": last_prompt.strip()})
+            t1 = time.time()
+            elapsed = t1 - t0
 
     answer = (result or {}).get("answer", "").strip()
     chunks = (result or {}).get("chunks") or []
@@ -184,12 +155,10 @@ if st.session_state.messages and st.session_state.messages[-1]["text"] == "...":
         if link:
             refs = [link]
 
-    # substitui o marcador pela resposta real
     st.session_state.messages.pop()
     st.session_state.messages.append({"role": "assistant", "text": answer or "—", "refs": refs})
 
-    # mostra tempo de resposta no rodapé do último bloco
-    with st.chat_message("assistant", avatar="🏛️"):
-        st.caption(f"⏱️ {t1 - t0:.2f}s")
+    with st.chat_message("assistant"):
+        st.caption(f"⏱️ {elapsed:.2f}s")
 
     st.rerun()

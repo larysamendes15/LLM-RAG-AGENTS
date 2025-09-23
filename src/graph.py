@@ -1,124 +1,120 @@
+# src/graph.py
 from __future__ import annotations
 
-import re
+import os
+import time
 from functools import lru_cache
 from typing import TypedDict, List, Dict, Any
 
 from langgraph.graph import StateGraph, END
 
-from src.agents.retriever_agent import retrieve_top1
+
+SELF_CHECK_ENABLED = os.getenv("SELF_CHECK_ENABLED", "1") == "1"
+K_TOP = int(os.getenv("RETRIEVER_K", "5"))
+CTX_CLIP_CHARS = int(os.getenv("CTX_CLIP_CHARS", "1200"))
+
+try:
+    from src.agents.retriever_agent import retrieve_topk as _retrieve
+    _HAS_TOPK = True
+except Exception:
+    from src.agents.retriever_agent import retrieve_top1 as _retrieve
+    _HAS_TOPK = False
+
 from src.agents.answer_agent import answer_best
-from src.agents.self_check_agent import fast_self_check
+from src.agents.self_check_agent import SelfCheckAgent
 
+_self_checker = SelfCheckAgent() if SELF_CHECK_ENABLED else None
 
-# ----------------------------
-# State
-# ----------------------------
 class GraphState(TypedDict, total=False):
     question: str
     chunks: List[Dict[str, Any]]
     answer: str
-    self_check: Dict[str, Any]
+    self_check: str
+    timings: Dict[str, float]
 
-
-# ----------------------------
-# Query normalizer/expander
-# ----------------------------
-_ws = re.compile(r"\s+")
-def _normalize(q: str) -> str:
-    return _ws.sub(" ", (q or "").strip()).lower()
 
 def expand_query(q: str) -> str:
-    """
-    Expande abreviações e siglas comuns do domínio:
-    - 'oq' -> 'o que é'
-    - IBS/CBS/IS -> nomes completos (inclui variação sem acento)
-    """
-    qn = _normalize(q)
-
-    # mapeia siglas para descrições
-    expansions: List[str] = []
-    if re.search(r"\bcbs\b", qn):
-        expansions += [
-            "Contribuição sobre Bens e Serviços",
-            "Contribuicao sobre Bens e Servicos",
-        ]
-    if re.search(r"\bibs\b", qn):
-        expansions += [
-            "Imposto sobre Bens e Serviços",
-            "Imposto sobre Bens e Servicos",
-        ]
-    if re.search(r"\bis\b", qn):
-        expansions += ["Imposto Seletivo"]
-
-    # contexto geral útil para ancoragem
-    if any(k in qn for k in ["ibs", "cbs", "imposto", "contribuicao", "reforma"]):
-        expansions += ["Reforma Tributária EC 132", "Lei Geral do IBS e da CBS"]
-
-    if expansions:
-        qn = f"{qn} | " + " | ".join(expansions)
-    return qn
+    """Gancho para expansão/normalização da consulta."""
+    return (q or "").strip()
 
 
-# ----------------------------
-# Nodes (modo único: best)
-# ----------------------------
+def _clip_chunk(c: Dict[str, Any]) -> Dict[str, Any]:
+    """Clipa o conteúdo do chunk para CTX_CLIP_CHARS, preservando metadados."""
+    if not isinstance(c, dict):
+        return {"content": str(c)[:CTX_CLIP_CHARS]}
+    content = str(c.get("content", ""))[:CTX_CLIP_CHARS]
+    out = dict(c)
+    out["content"] = content
+    return out
+
 def node_retrieve(state: GraphState) -> GraphState:
-    raw_q = state["question"]
-    q = expand_query(raw_q)
-    chunks = retrieve_top1(q)  # SEM THRESHOLD
-    return {"chunks": chunks}
+    t0 = time.perf_counter()
+    q = expand_query(state.get("question", ""))
+
+    if _HAS_TOPK:
+        chunks = _retrieve(q, k=max(1, K_TOP))
+    else:
+        chunks = _retrieve(q)
+
+    t1 = time.perf_counter()
+    return {"chunks": chunks, "timings": {"retrieve": t1 - t0}}
+
 
 def node_answer(state: GraphState) -> GraphState:
-    q = state["question"]
-    chunks = state.get("chunks", [])
-    top = chunks[0] if chunks else {"content": "", "source": ""}
-    ans = answer_best(q, chunks)
-    return {"answer": ans}
+    t0 = time.perf_counter()
+
+    chunks = state.get("chunks", []) or []
+    topk = [ _clip_chunk(c) for c in chunks[:max(1, K_TOP)] ]
+
+    ans = answer_best(state.get("question", ""), topk)
+
+    t1 = time.perf_counter()
+    timings = dict(state.get("timings", {}))
+    timings["answer"] = t1 - t0
+    return {"answer": ans, "timings": timings}
+
 
 def node_self_check(state: GraphState) -> GraphState:
-    ans = state.get("answer", "")
-    chunks = state.get("chunks", [])
-    allowed = [c.get("source") for c in chunks]
-    chk = fast_self_check(ans, allowed_sources=allowed)
-    return {"self_check": chk}
+    t0 = time.perf_counter()
+
+    if not SELF_CHECK_ENABLED or _self_checker is None:
+        timings = dict(state.get("timings", {}))
+        timings["self_check"] = 0.0
+        return {"self_check": "skipped", "timings": timings}
+
+    chunks = state.get("chunks", []) or []
+    topk = chunks[:max(1, K_TOP)]
+
+    chk = _self_checker.check(
+        {
+            "question": state.get("question", ""),
+            "answer": state.get("answer", ""),
+            "chunks": topk,
+        }
+    )
+
+    t1 = time.perf_counter()
+    timings = dict(state.get("timings", {}))
+    timings["self_check"] = t1 - t0
+    return {"self_check": chk, "timings": timings}
 
 
-# ----------------------------
-# Graph factory
-# ----------------------------
 @lru_cache(maxsize=1)
 def get_graph():
     g = StateGraph(GraphState)
 
     g.add_node("retrieve", node_retrieve)
     g.add_node("answer", node_answer)
-    g.add_node("self_check", node_self_check)
-    
+    if SELF_CHECK_ENABLED:
+        g.add_node("self_check", node_self_check)
+
     g.set_entry_point("retrieve")
     g.add_edge("retrieve", "answer")
-    g.add_edge("answer", "self_check")
-    g.add_edge("self_check", END)
+
+    if SELF_CHECK_ENABLED:
+        g.add_edge("answer", "self_check")
+        g.add_edge("self_check", END)
+    else:
+        g.add_edge("answer", END)
 
     return g.compile()
-
-
-# ----------------------------
-# CLI helper
-# ----------------------------
-def answer_question(question: str) -> GraphState:
-    graph = get_graph()
-    return graph.invoke({"question": question})
-
-if __name__ == "__main__":
-    import sys
-    q = " ".join(sys.argv[1:]) or "O que é a CBS?"
-    out = answer_question(q)
-    print("RESPOSTA:\n", (out.get("answer") or "").strip())
-    print("\nREFERÊNCIA:")
-    if out.get("chunks"):
-        src = out["chunks"][0].get("source")
-        pg = out["chunks"][0].get("page")
-        if src:
-            print("-", src + (f"#page={pg}" if pg is not None else ""))
-    print("\nSELF-CHECK:", out.get("self_check"))
