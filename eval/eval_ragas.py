@@ -75,8 +75,6 @@ def run_eval():
     # 5) DataFrame -> Dataset 
     df = pd.DataFrame(rows)
     ds = Dataset.from_pandas(df[["question", "answer", "contexts", "ground_truth"]])
-
-    # 6) LLM avaliador (Ollama) e avaliação
     judge = make_ollama_judge()
     embedder = make_embeddings()
     result = evaluate(

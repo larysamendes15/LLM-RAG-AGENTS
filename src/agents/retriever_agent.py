@@ -53,7 +53,6 @@ def retrieve_top1(query: str) -> List[Dict[str, Any]]:
     """
     vs = _vs()
 
-    # 1) relevância (maior = melhor)
     try:
         pairs: List[Tuple[Any, float]] = vs.similarity_search_with_relevance_scores(query, k=5)
         if pairs:
@@ -66,7 +65,6 @@ def retrieve_top1(query: str) -> List[Dict[str, Any]]:
     except Exception:
         pass
 
-    # 2) distância (menor = melhor)
     try:
         pairs = vs.similarity_search_with_score(query, k=1)
         if pairs:
@@ -79,7 +77,6 @@ def retrieve_top1(query: str) -> List[Dict[str, Any]]:
     except Exception:
         pass
 
-    # 3) sem score
     try:
         docs = vs.similarity_search(query, k=1)
         print("[retrieve] fallback para similarity_search (sem score)")

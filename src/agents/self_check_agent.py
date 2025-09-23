@@ -1,52 +1,97 @@
 from __future__ import annotations
+
+import os
 import re
-from typing import List, Dict
+from typing import Dict, Any, List
 
-_SENT_SPLIT = re.compile(r"[.!?]\s+")
+_HAS_ST = False
+try:
+    from sentence_transformers import SentenceTransformer
+    from sklearn.metrics.pairwise import cosine_similarity
+    _HAS_ST = True
+except Exception:
+    _HAS_ST = False
 
-FALLBACK_NO_CONTEXT = "Não foi encontrado contexto para a pergunta solicitada."
+def _normalize(txt: str) -> str:
+    txt = (txt or "").strip()
+    return re.sub(r"\s+", " ", txt)
 
-def _strip_disclaimer(text: str) -> str:
+def _token_set(text: str) -> set:
+    text = text.lower()
+    text = re.sub(r"[^\w\s]", " ", text, flags=re.UNICODE)
+    toks = re.findall(r"\w+", text, flags=re.UNICODE)
+    return {t for t in toks if len(t) >= 3}
+
+def _jaccard(a: str, b: str) -> float:
+    sa, sb = _token_set(a), _token_set(b)
+    if not sa or not sb:
+        return 0.0
+    inter = len(sa & sb)
+    union = len(sa | sb)
+    return inter / union if union else 0.0
+
+
+# ---------------------------
+# Agente de Self-Check
+# ---------------------------
+class SelfCheckAgent:
     """
-    Remove o disclaimer se já tiver sido anexado ao final do texto.
-    Regra simples: tudo antes de uma linha que começa com '—' (travessão).
+    Verifica coerência entre a resposta do LLM e até 3 chunks do contexto.
+    - Padrão: similaridade Jaccard.
+    - Opcional: embeddings + cosseno (SELF_CHECK_USE_EMB=1).
+    Retorna uma string curta com o melhor score.
     """
-    if not text:
-        return ""
-    parts = text.split("\n—\n", 1)  # usa o separador que você está usando no disclaimer
-    return parts[0].strip()
 
-def fast_self_check(answer: str, allowed_sources: List[str]) -> Dict:
-    """
-    Modo best:
-    - Se a resposta for o fallback, está OK (sem referência).
-    - Caso contrário: checa concisão (≤ 4 frases). Não bloqueia por allowed_sources vazio.
-    """
-    txt = (answer or "").strip()
-    # ignore o disclaimer na checagem
-    core = _strip_disclaimer(txt)
+    def __init__(self):
+        self.ctx_clip_chars = int(os.getenv("SELF_CHECK_CTX_CHARS", "1200"))
+        self.use_emb = bool(int(os.getenv("SELF_CHECK_USE_EMB", "0"))) and _HAS_ST
+        default_thr = 0.55 if self.use_emb else 0.30
+        self.threshold = float(os.getenv("SELF_CHECK_MIN_SIM", str(default_thr)))
 
-    if core == FALLBACK_NO_CONTEXT:
-        return {"ok": True, "message": "Sem contexto — resposta padrão exibida."}
+        self.model = None
+        if self.use_emb:
+            self.model = SentenceTransformer(
+                os.getenv(
+                    "SELF_CHECK_EMB_MODEL",
+                    "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+                )
+            )
 
-    sents = [s for s in _SENT_SPLIT.split(core) if s.strip()]
-    if len(sents) > 4:
-        return {"ok": False, "message": "Resposta longa demais (máx. 4 frases)."}
+    def _sim(self, a: str, b: str) -> float:
+        if self.use_emb and self.model is not None:
+            va = self.model.encode([a], normalize_embeddings=True)
+            vb = self.model.encode([b], normalize_embeddings=True)
+            return float(cosine_similarity(va, vb)[0][0])
+        return _jaccard(a, b)
 
-    # NÃO bloqueie por allowed_sources vazio — isso não deve impedir a resposta
-    return {"ok": True, "message": "OK"}
+    def check(self, payload: Dict[str, Any]) -> str:
+        """
+        payload: {"question": str, "answer": str, "chunks": List[dict]}
+        Usa até os 3 primeiros chunks.
+        """
+        answer = _normalize(payload.get("answer", ""))
+        chunks: List[Dict[str, Any]] = payload.get("chunks", []) or []
 
-def apply_safety(result: dict) -> dict:
-    """
-    Adiciona o disclaimer APENAS se NÃO for fallback.
-    Deixe para anexar o disclaimer DEPOIS do self-check (exibição/UX).
-    """
-    ans = (result.get("answer") or "").strip()
-    if ans and ans != FALLBACK_NO_CONTEXT:
-        disclaimer = (
-            "\n\n—\n"
-            "*Aviso*: conteúdo informativo com base em fontes oficiais "
-            "(gov.br/Planalto/Câmara/Senado). Não substitui consultoria jurídica."
-        )
-        result["answer"] = ans + disclaimer
-    return result
+        if not answer:
+            return "SKIP: resposta vazia"
+        if not chunks:
+            return "SKIP: sem chunks"
+
+        sims = []
+        for c in chunks[:3]:
+            ctx = _normalize(str(c.get("content", "")))[: self.ctx_clip_chars]
+            if not ctx:
+                continue
+            sims.append(self._sim(answer, ctx))
+
+        if not sims:
+            return "SKIP: chunks vazios"
+
+        best = max(sims)
+        status = "OK" if best >= self.threshold else "ALERTA"
+        if status == "OK":
+            return f"OK: similaridade {best:.2f} ≥ {self.threshold:.2f}"
+        return f"ALERTA: similaridade {best:.2f} < {self.threshold:.2f}"
+
+    def __call__(self, payload: Dict[str, Any]) -> str:
+        return self.check(payload)
