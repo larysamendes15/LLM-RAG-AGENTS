@@ -31,12 +31,6 @@ def _jaccard(a: str, b: str) -> float:
     return inter / union if union else 0.0
 
 class SelfCheckAgent:
-    """
-    Verifica coerência entre a resposta do LLM e até 3 chunks do contexto.
-    - Padrão: similaridade Jaccard.
-    - Opcional: embeddings + cosseno (SELF_CHECK_USE_EMB=1).
-    Retorna uma string curta com o melhor score.
-    """
 
     def __init__(self):
         self.ctx_clip_chars = int(os.getenv("SELF_CHECK_CTX_CHARS", "1200"))
@@ -61,10 +55,7 @@ class SelfCheckAgent:
         return _jaccard(a, b)
 
     def check(self, payload: Dict[str, Any]) -> str:
-        """
-        payload: {"question": str, "answer": str, "chunks": List[dict]}
-        Usa até os 3 primeiros chunks.
-        """
+
         answer = _normalize(payload.get("answer", ""))
         chunks: List[Dict[str, Any]] = payload.get("chunks", []) or []
 

@@ -12,20 +12,24 @@ def _build_llm() -> ChatOllama:
     model = os.getenv("OLLAMA_MODEL", "mistral:7b")
     base_url = os.getenv("OLLAMA_BASE_URL", "http://150.165.75.163/ollama/")
     num_ctx = int(os.getenv("OLLAMA_NUM_CTX", "4096"))
-    num_pred = int(os.getenv("OLLAMA_NUM_PREDICT", "192"))
+    num_pred = int(os.getenv("OLLAMA_NUM_PREDICT", "512"))
     temp = float(os.getenv("OLLAMA_TEMPERATURE", "0.1"))
     return ChatOllama(base_url=base_url, model=model, num_ctx=num_ctx, num_predict=num_pred, temperature=temp)
 
 ANSWER_PROMPT_BEST = PromptTemplate.from_template(
     """
-Você é um assistente especializado em Reforma Tributária.
-Responda em português, de forma clara e completa, mas sem ultrapassar 6 frases.
-Evite terminar no meio de uma ideia.
+Você é um assistente especializado em Reforma Tributária no Brasil.  
+Use **somente** as informações fornecidas no CONTEXTO para responder à PERGUNTA.  
+- Se o contexto não trouxer dados suficientes, diga claramente: "Não encontrei informações no material disponível para responder com segurança."  
+- Responda em português, de forma clara, didática e completa, em até 6 frases.  
+- Evite terminar no meio de uma ideia.  
+- Não invente fatos fora do contexto.  
 
 CONTEXTO:
 {context}
 
-PERGUNTA: {question}
+PERGUNTA:
+{question}
 """
 )
 

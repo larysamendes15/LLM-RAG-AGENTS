@@ -44,9 +44,9 @@ def _to_payload(docs) -> List[Dict[str, Any]]:
     return out
 
 
-def retrieve_top1(query: str) -> List[Dict[str, Any]]:
+def retrieve_top(query: str) -> List[Dict[str, Any]]:
     """
-    Sempre retorna o top-1:
+    Sempre retorna o top-5:
     - tenta relevance_scores (maior=melhor)
     - depois score como distância (menor=melhor)
     - por fim, similarity_search sem score
@@ -54,30 +54,30 @@ def retrieve_top1(query: str) -> List[Dict[str, Any]]:
     vs = _vs()
 
     try:
-        pairs: List[Tuple[Any, float]] = vs.similarity_search_with_relevance_scores(query, k=3)
+        pairs: List[Tuple[Any, float]] = vs.similarity_search_with_relevance_scores(query, k=5)
         if pairs:
-            doc, rel = pairs[0]
             try:
-                print(f"[retrieve] rel={float(rel):.3f}  q='{query[:80]}'")
+                scores = ", ".join(f"{float(rel):.3f}" for _, rel in pairs)
+                print(f"[retrieve@rel] top-{len(pairs)} scores = [{scores}] q='{query[:80]}'")
             except Exception:
                 pass
-            return _to_payload(list(map(lambda doc: doc[0], pairs)))
+            return _to_payload([doc for doc, _ in pairs])
     except Exception:
         pass
 
     try:
-        pairs = vs.similarity_search_with_score(query, k=1)
+        pairs = vs.similarity_search_with_score(query, k=5)
         if pairs:
-            doc, dist = pairs[0]
             try:
-                print(f"[retrieve] dist={float(dist):.3f} q='{query[:80]}'")
+                scores = ", ".join(f"{float(dist):.3f}" for _, dist in pairs)
+                print(f"[retrieve@dist] top-{len(pairs)} dists = [{scores}] q='{query[:80]}'")
             except Exception:
                 pass
-            return _to_payload([doc])
+            return _to_payload([doc for doc, _ in pairs])
     except Exception:
         pass
     try:
-        docs = vs.similarity_search(query, k=1)
+        docs = vs.similarity_search(query, k=3)
         print("[retrieve] fallback para similarity_search (sem score)")
         return _to_payload(docs)
     except Exception:
